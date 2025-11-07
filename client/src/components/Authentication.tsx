@@ -30,6 +30,8 @@ const Authentication = () => {
 
         setLoading(true);
 
+        let res;
+
         try {
             const url = mode === "login" ? "http://localhost:5136/api/auth/login" : "http://localhost:5136/api/auth/register";
             const payload: any =
@@ -37,7 +39,7 @@ const Authentication = () => {
             ? { userName: username || email, password }
             : { email, password, userName: username };
 
-            const res = await fetch(url, {
+            res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -59,10 +61,10 @@ const Authentication = () => {
             setError(ex?.message || "Hálózati hiba");
             } finally {
             setLoading(false);
-            if (mode === "register") {
+            if (mode === "register" && res?.ok) {
                 setTimeout(() => setMode("login"), 2000);
             }
-            else
+            else if (mode === "login" && res?.ok)
             {
                 setTimeout(() => navigate("/main"), 2000);
             }
