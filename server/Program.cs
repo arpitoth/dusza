@@ -6,6 +6,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var MyCors = "_myCors";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyCors, policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DuszaDbContext>(options =>
@@ -47,6 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseCors(MyCors);
 app.UseAuthorization();
 app.MapControllers();
 

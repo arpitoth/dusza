@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Dusza.Api.Data;
 
-namespace ZestApi.Middlewares;
+namespace DuszaApi.Middlewares;
 
 public class ValidateTokenMiddleware
 {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Dusza.Api.Data;
 using Dusza.Api.Models;
-using ZestApi.Filters;
-using ZestApi.Middlewares;
+using DuszaApi.Filters;
+using DuszaApi.Middlewares;
 
 namespace ZestApi.Controllers;
 

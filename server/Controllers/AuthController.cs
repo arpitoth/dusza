@@ -63,7 +63,7 @@ public class AuthController : ControllerBase
         var accessToken = GenerateJwtToken(user!);
         var refreshToken = GenerateRefreshToken();
 
-        _dbContext.RefreshTokens.Add(new Dusza.Api.Models.RefreshToken
+        _dbContext.RefreshTokens.Add(new RefreshToken
         {
             Token = refreshToken,
             UserId = user!.Id,
@@ -95,7 +95,7 @@ public class AuthController : ControllerBase
         var newAccessToken = GenerateJwtToken(user);
         var newRefreshToken = GenerateRefreshToken();
 
-        _dbContext.RefreshTokens.Add(new Dusza.Api.Models.RefreshToken
+        _dbContext.RefreshTokens.Add(new RefreshToken
         {
             Token = newRefreshToken,
             UserId = user.Id,
@@ -128,7 +128,7 @@ public class AuthController : ControllerBase
     {
         var claims = new List<Claim>
         {
-            new Claim("id", user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())

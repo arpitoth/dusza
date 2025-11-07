@@ -169,3 +169,4 @@ C:\Users\akosf\SS\Dusza-2025\server\obj\Debug\net9.0\refint\server.dll
 C:\Users\akosf\SS\Dusza-2025\server\obj\Debug\net9.0\server.pdb
 C:\Users\akosf\SS\Dusza-2025\server\obj\Debug\net9.0\server.genruntimeconfig.cache
 C:\Users\akosf\SS\Dusza-2025\server\obj\Debug\net9.0\ref\server.dll
+C:\Users\akosf\SS\Dusza-2025\server\obj\Debug\net9.0\server.sourcelink.json

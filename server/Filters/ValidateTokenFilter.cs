@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Dusza.Api.Data;
 
-namespace ZestApi.Filters;
+namespace DuszaApi.Filters;
 
 public class ValidateTokenAttribute : TypeFilterAttribute<ValidateTokenFilter>
 {
@@ -59,8 +59,8 @@ public class ValidateTokenFilter : IAsyncActionFilter
         string? token,
         ICollection<SecurityKey> signingKeys,
         out JwtSecurityToken? jwt,
-        string issuer = "ZestApi",
-        string audience = "ZestClient"
+        string issuer = "DuszaApi",
+        string audience = "DuszaClient"
     )
     {
         if (token == null)
