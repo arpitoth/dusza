@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Game = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -28,16 +28,18 @@ const Game = () => {
   const [nocard, setNocard] = useState(false);
   const [opendialog, setOpenDialog] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string>("");
-  const navigate = useNavigate();
+  const { gameId } = useParams<{ gameId: string }>();
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const res = await fetch("http://localhost:5136/api/game/cardslist");
+        const res = await fetch(
+          `http://localhost:5136/api/game/${gameId}/cards`
+        );
         const data = await res.json();
         setCards(data);
-      } catch (err: any) {
-        setNocard(true);
+      } catch (err) {
+        setError("Nincsenek még kártyák elmentve. Hozz létre újat!");
       } finally {
         setLoading(false);
       }
@@ -73,22 +75,23 @@ const Game = () => {
   };
 
   const handleSave = async (card: any) => {
-    const res = await fetch("http://localhost:5136/api/game/addcard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(card),
-    });
+    const res = await fetch(
+      `http://localhost:5136/api/game/${gameId}/addcard`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(card), 
+      }
+    );
 
     if (!res.ok) {
       console.log("Sikertelen mentés.");
       return;
     }
 
+    const savedCard = await res.json();
+    setCards((prev) => [...prev, savedCard]);
     console.log("Kártya elmentve.");
-  };
-
-  const Reload = () => {
-    window.location.reload();
   };
 
   const handleDelete = async (id: number) => {
@@ -105,12 +108,15 @@ const Game = () => {
         return;
       }
 
-      // Ha sikeres, frissítjük a state-et, hogy eltűnjön a törölt kártya
       setCards(cards.filter((c) => c.id !== id));
     } catch (err) {
       console.log("Hiba a törlés során:", err);
     }
   };
+
+  const Reload = () => {
+    window.location.reload()
+  } 
 
   return (
     <>
@@ -129,14 +135,17 @@ const Game = () => {
                   key={c.id}
                   className="p-3 bg-gray-800 rounded-xl hover:bg-gray-700 transition cursor-pointer w-[calc(50%-0.5rem)] text-center"
                 >
-                  <span className="text-lg font-bold">Név: {c.name}</span> <br />
+                  <span className="text-lg font-bold">Név: {c.name}</span>{" "}
+                  <br />
                   Sebzés: {c.damage} <br />
                   Életerő: {c.hp} <br />
                   <span className="mb-4">Típus: {c.cardType}</span> <br />
                   <button
                     onClick={() => handleDelete(c.id)}
                     className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded mt-5"
-                  >Törlés</button>
+                  >
+                    Törlés
+                  </button>
                 </li>
               ))}
             </ul>

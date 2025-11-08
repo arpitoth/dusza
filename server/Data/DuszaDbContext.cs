@@ -21,5 +21,11 @@ public class DuszaDbContext : DbContext
             .Entity<Card>()
             .Property(u => u.CardType)
             .HasConversion<string>();
+
+        modelBuilder.Entity<Card>()
+        .HasOne(c => c.Game)
+        .WithMany(g => g.Cards)
+        .HasForeignKey(c => c.GameId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -3,7 +3,7 @@ import Authentication from "./components/Authentication";
 import MainMenu from "./components/MainMenu";
 import NewGame from "./components/NewGame";
 import LoadGame from "./components/LoadGame";
-import Game from "./components/Game";
+import AddCard from "./components/AddCard";
 
 function App() {
 
@@ -14,7 +14,7 @@ function App() {
         <Route path="/main" element={<MainMenu />} />
         <Route path="/newgame" element={<NewGame />} />
         <Route path="/loadgame" element={<LoadGame/>} />
-        <Route path="/game/:id" element={<Game />} />
+        <Route path="/game/:gameId" element={<AddCard />} />
       </Routes>
     </BrowserRouter>
   )

@@ -30,6 +30,9 @@ namespace server.Migrations
                     b.Property<int>("Damage")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("GameId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("HP")
                         .HasColumnType("INTEGER");
 
@@ -38,6 +41,8 @@ namespace server.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("Cards");
                 });
@@ -99,6 +104,22 @@ namespace server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Dusza.Api.Models.Card", b =>
+                {
+                    b.HasOne("Dusza.Api.Models.Game", "Game")
+                        .WithMany("Cards")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Dusza.Api.Models.Game", b =>
+                {
+                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }

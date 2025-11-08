@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Dusza.Api.Models;
 
@@ -18,4 +19,9 @@ public class Card
     public int Damage { get; set; }
     public int HP { get; set; }
     public string CardType { get; set; }
+
+    public int GameId { get; set; }
+
+    [ForeignKey(nameof(GameId))]
+    public virtual Game Game { get; set; }
 }

@@ -34,7 +34,7 @@ public class GameController : ControllerBase
 
         _dbContext.Games.Add(game);
         await _dbContext.SaveChangesAsync();
-        return Ok(new { message = "Sikeres mentés" });
+        return Ok(new { message = "Sikeres mentés", id = game.Id });
     }
 
     [HttpGet("gameslist")]
@@ -57,30 +57,42 @@ public class GameController : ControllerBase
         return Ok(cards);
     }
 
-    [HttpPost("addcard")]
-    public async Task<IActionResult> AddCard([FromBody] CardRequest request)
+    [HttpPost("{gameId}/addcard")]
+    public async Task<IActionResult> AddCard(int gameId, [FromBody] CardRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
             return BadRequest("Név kötelező.");
 
-        if (!Enum.TryParse<CardType>(request.CardType, out var genderEnum))
+        if (!Enum.TryParse<CardType>(request.CardType, out var _))
             return BadRequest("Érvénytelen típus!");
 
-        if (await _dbContext.Cards.AnyAsync(u => u.Name == request.Name))
-            return BadRequest("Ezzel a névvel már van létrehozott kártya!");
+        var game = await _dbContext.Games.FindAsync(gameId);
+        if (game == null)
+            return BadRequest("A játék nem létezik.");
 
-        var card = new Card
+        if (await _dbContext.Cards.AnyAsync(c => c.Name == request.Name && c.GameId == gameId))
+            return BadRequest("Ezzel a névvel már van létrehozott kártya ennél a játéknál!");
+
+        try
         {
-            Name = request.Name,
-            Damage = request.Damage,
-            HP = request.Health,
-            CardType = request.CardType
-        };
+            var card = new Card
+            {
+                Name = request.Name,
+                Damage = request.Damage,
+                HP = request.Health,
+                CardType = request.CardType,
+                GameId = gameId 
+            };
 
-        _dbContext.Cards.Add(card);
-        await _dbContext.SaveChangesAsync();
+            _dbContext.Cards.Add(card);
+            await _dbContext.SaveChangesAsync();
 
-        return Ok(card);
+            return Ok(card);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Hiba a kártya mentésekor: {ex.Message}");
+        }
     }
 
     [HttpDelete("deletecard/{id}")]
@@ -96,6 +108,16 @@ public class GameController : ControllerBase
         return Ok(new { message = "Kártya sikeresen törölve." });
     }
 
+    [HttpGet("{gameId}/cards")]
+    public async Task<IActionResult> GetCardsForGame(int gameId)
+    {
+        var cards = await _dbContext.Cards
+            .Where(c => c.GameId == gameId)
+            .ToListAsync();
+
+        return Ok(cards);
+    }
+
 }
 
 public class NameRequest
@@ -109,4 +131,5 @@ public class CardRequest
     public int Damage { get; set; }
     public int Health { get; set; }
     public string CardType { get; set; }
+    public int GameId { get; set; }
 }
