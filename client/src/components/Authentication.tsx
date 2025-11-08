@@ -102,7 +102,6 @@ const Authentication = () => {
                                     />
                                 </div>
 
-
                                 <div>
                                     <label className="block text-sm font-medium text-gray-200 mb-1">Jelszó</label>
                                         <div className="relative">
@@ -143,10 +142,8 @@ const Authentication = () => {
                                     </button>
                                 </div>
 
-
                                 {error && <div className="text-sm text-red-400">{error}</div>}
                                 {success && <div className="text-sm text-green-400">{success}</div>}
-
 
                                 <div>
                                 <button

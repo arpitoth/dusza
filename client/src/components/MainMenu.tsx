@@ -25,11 +25,11 @@ const MainMenu = () => {
   };
 
   const newGame = () => {
-
+    navigate("/newgame")
   };
 
   const loadGame = () => {
-    
+    navigate("/loadgame")
   };
 
   return (

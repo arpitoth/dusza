@@ -10,4 +10,8 @@ public class DuszaDbContext : DbContext
     public DbSet<User> Users { get; set; }
 
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+    public DbSet<Card> Cards { get; set; }
+
+    public DbSet<Game> Games { get; set; }
 }
