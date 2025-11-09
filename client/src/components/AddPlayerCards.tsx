@@ -44,7 +44,7 @@ const AddPlayerCards = () => {
   };
 
   const addPlayerCard = (card: Card) => {
-    if (pcards.some((c) => c.id === card.id || pcards.some((c) => c.isBoss === card.isBoss))) return;
+    if (pcards.some((c) => c.id === card.id) || card.isBoss) return;
     setdCards((prev) => [...prev, card]);
   };
 
@@ -122,7 +122,6 @@ const AddPlayerCards = () => {
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
               <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
-              <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>
           ))}
