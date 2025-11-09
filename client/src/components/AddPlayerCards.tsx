@@ -16,7 +16,7 @@ const AddPlayerCards = () => {
   const navigate = useNavigate();
   const { gameId } = useParams<{ gameId: string }>();
   const [cards, setCards] = useState<Card[]>([]);
-  const [dcards, setdCards] = useState<Card[]>([]);
+  const [pcards, setdCards] = useState<Card[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,23 +39,12 @@ const AddPlayerCards = () => {
     fetchCards();
   }, [gameId]);
 
-  const maxCardsForSize = (size: Size) => {
-    switch (size) {
-      case "Egyszerű_találkozás":
-        return 1;
-      case "Kis_kazamata":
-        return 4;
-      case "Nagy_kazamata":
-        return 6;
-    }
-  };
-
   const handleCardClick = (card: Card) => {
     addPlayerCard(card);
   };
 
   const addPlayerCard = (card: Card) => {
-    if (dcards.some((c) => c.id === card.id)) return;
+    if (pcards.some((c) => c.id === card.id || pcards.some((c) => c.isBoss === card.isBoss))) return;
     setdCards((prev) => [...prev, card]);
   };
 
@@ -64,13 +53,13 @@ const AddPlayerCards = () => {
   };
 
   const saveDeck = async () => {
-    if (dcards.length === 0) {
+    if (pcards.length === 0) {
       alert("Válassz kártyákat!");
       return;
     }
 
     const payload = {
-      cardIds: dcards.map((c) => c.id),
+      cardIds: pcards.map((c) => c.id),
       gameId: Number(gameId),
     };
 
@@ -111,7 +100,8 @@ const AddPlayerCards = () => {
               <span className="mb-8 mt-8 text-lg">Sebzés: {c.damage}</span>
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
-              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span>
+              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
+              <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>
           ))}
@@ -120,7 +110,7 @@ const AddPlayerCards = () => {
       <p className="m-[2%]"></p>
       <div className="bg-gradient-to-br from-gray-800 to-gray-700 rounded-2xl shadow-2xl p-8 w-full min-h-50">
         <ul className="flex flex-wrap gap-4">
-          {dcards.map((c) => (
+          {pcards.map((c) => (
             <li
               key={c.id}
               onClick={() => removePlayerCard(c.id)}
@@ -131,7 +121,8 @@ const AddPlayerCards = () => {
               <span className="mb-8 mt-8 text-lg">Sebzés: {c.damage}</span>
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
-              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span>
+              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
+              <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>
           ))}

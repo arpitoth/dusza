@@ -237,7 +237,8 @@ const AddDungeon = () => {
               <span className="mb-8 mt-8 text-lg">Sebzés: {c.damage}</span>
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
-              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span>
+              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
+              <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>
           ))}
@@ -257,7 +258,9 @@ const AddDungeon = () => {
               <span className="mb-8 mt-8 text-lg">Sebzés: {c.damage}</span>
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
-              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span>
+              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
+              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
+              <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>
           ))}
