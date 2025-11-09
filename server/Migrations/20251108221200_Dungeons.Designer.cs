@@ -3,6 +3,7 @@ using System;
 using Dusza.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,27 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace server.Migrations
 {
     [DbContext(typeof(DuszaDbContext))]
-    partial class DuszaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251108221200_Dungeons")]
+    partial class Dungeons
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
-
-            modelBuilder.Entity("CardDungeon", b =>
-                {
-                    b.Property<int>("CardsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DungeonsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CardsId", "DungeonsId");
-
-                    b.HasIndex("DungeonsId");
-
-                    b.ToTable("CardDungeon");
-                });
 
             modelBuilder.Entity("Dungeon", b =>
                 {
@@ -96,14 +84,9 @@ namespace server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PlayerCardsId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("PlayerCardsId");
 
                     b.ToTable("Cards");
                 });
@@ -167,35 +150,6 @@ namespace server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PlayerCards", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PlayerCards");
-                });
-
-            modelBuilder.Entity("CardDungeon", b =>
-                {
-                    b.HasOne("Dusza.Api.Models.Card", null)
-                        .WithMany()
-                        .HasForeignKey("CardsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Dungeon", null)
-                        .WithMany()
-                        .HasForeignKey("DungeonsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Dungeon", b =>
                 {
                     b.HasOne("Dusza.Api.Models.Game", "Game")
@@ -210,13 +164,13 @@ namespace server.Migrations
             modelBuilder.Entity("DungeonCard", b =>
                 {
                     b.HasOne("Dusza.Api.Models.Card", "Card")
-                        .WithMany()
+                        .WithMany("DungeonCards")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Dungeon", "Dungeon")
-                        .WithMany()
+                        .WithMany("DungeonCards")
                         .HasForeignKey("DungeonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -234,11 +188,17 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlayerCards", null)
-                        .WithMany("Cards")
-                        .HasForeignKey("PlayerCardsId");
-
                     b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Dungeon", b =>
+                {
+                    b.Navigation("DungeonCards");
+                });
+
+            modelBuilder.Entity("Dusza.Api.Models.Card", b =>
+                {
+                    b.Navigation("DungeonCards");
                 });
 
             modelBuilder.Entity("Dusza.Api.Models.Game", b =>
@@ -246,11 +206,6 @@ namespace server.Migrations
                     b.Navigation("Cards");
 
                     b.Navigation("Dungeons");
-                });
-
-            modelBuilder.Entity("PlayerCards", b =>
-                {
-                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }

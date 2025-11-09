@@ -15,6 +15,12 @@ public class DuszaDbContext : DbContext
 
     public DbSet<Game> Games { get; set; }
 
+    public DbSet<Dungeon> Dungeons { get; set; }
+
+    public DbSet<DungeonCard> DungeonCards { get; set; }
+
+    public DbSet<PlayerCards> PlayerCards { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -23,9 +29,12 @@ public class DuszaDbContext : DbContext
             .HasConversion<string>();
 
         modelBuilder.Entity<Card>()
-        .HasOne(c => c.Game)
-        .WithMany(g => g.Cards)
-        .HasForeignKey(c => c.GameId)
-        .OnDelete(DeleteBehavior.Cascade);
+            .HasOne(c => c.Game)
+            .WithMany(g => g.Cards)
+            .HasForeignKey(c => c.GameId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<DungeonCard>()
+            .HasKey(dc => new { dc.DungeonId, dc.CardId });
     }
 }

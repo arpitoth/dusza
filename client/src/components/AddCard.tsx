@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 const Game = () => {
+  const navigate = useNavigate()
   const [cards, setCards] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,7 @@ const Game = () => {
       Damage: Number(formData.get("damage")),
       Health: Number(formData.get("health")),
       CardType: selectedOption,
+      IsBoss: false,
     };
 
     handleSave(card);
@@ -80,7 +82,7 @@ const Game = () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(card), 
+        body: JSON.stringify(card),
       }
     );
 
@@ -115,8 +117,8 @@ const Game = () => {
   };
 
   const Reload = () => {
-    window.location.reload()
-  } 
+    window.location.reload();
+  };
 
   return (
     <>
@@ -250,6 +252,7 @@ const Game = () => {
           <div>
             <button
               disabled={loading || nocard}
+              onClick={() => {navigate(`/game/${gameId}/addDungeon`)}}
               className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-indigo-600 hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-400 disabled:opacity-60 cursor-pointer"
             >
               {loading ? "Feldolgozás..." : "Tovább a kiválasztáshoz"}

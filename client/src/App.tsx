@@ -4,6 +4,9 @@ import MainMenu from "./components/MainMenu";
 import NewGame from "./components/NewGame";
 import LoadGame from "./components/LoadGame";
 import AddCard from "./components/AddCard";
+import AddDungeon from "./components/AddDungeon";
+import AddPlayerCards from "./components/AddPlayerCards";
+import GamePlay from "./components/GamePlay";
 
 function App() {
 
@@ -15,6 +18,9 @@ function App() {
         <Route path="/newgame" element={<NewGame />} />
         <Route path="/loadgame" element={<LoadGame/>} />
         <Route path="/game/:gameId" element={<AddCard />} />
+        <Route path="/game/:gameId/addDungeon" element={<AddDungeon />} />
+        <Route path="/game/:gameId/addPlayerCards" element={<AddPlayerCards />} />
+        <Route path="/game/:gameId/gamePlay" element={<GamePlay />} />
       </Routes>
     </BrowserRouter>
   )

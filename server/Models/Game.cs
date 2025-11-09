@@ -9,4 +9,5 @@ public class Game
     public string Name { get; set; }
 
     public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
+    public virtual ICollection<Dungeon> Dungeons { get; set; } = new List<Dungeon>();
 }

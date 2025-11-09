@@ -4,8 +4,9 @@ using Dusza.Api.Models;
 using DuszaApi.Filters;
 using DuszaApi.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
-namespace ZestApi.Controllers;
+namespace DuszaApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -79,9 +80,10 @@ public class GameController : ControllerBase
             {
                 Name = request.Name,
                 Damage = request.Damage,
-                HP = request.Health,
+                HP = request.HP,
                 CardType = request.CardType,
-                GameId = gameId 
+                GameId = gameId,
+                IsBoss = request.IsBoss
             };
 
             _dbContext.Cards.Add(card);
@@ -93,6 +95,75 @@ public class GameController : ControllerBase
         {
             return StatusCode(500, $"Hiba a kártya mentésekor: {ex.Message}");
         }
+    }
+
+    [HttpPost("addDungeon")]
+    public async Task<IActionResult> AddDungeon([FromBody] DungeonCreateRequest request)
+    {
+        var game = await _dbContext.Games.FindAsync(request.GameId);
+        if (game == null) return BadRequest("A játék nem létezik.");
+
+        if (!Enum.TryParse<Size>(request.Size, out var size))
+            return BadRequest("Érvénytelen méret.");
+
+        var cards = await _dbContext.Cards
+            .Where(c => request.CardIds.Contains(c.Id) && c.GameId == request.GameId)
+            .ToListAsync();
+
+        if (cards.Count != request.CardIds.Count)
+            return BadRequest("Egyes kártyák nem léteznek vagy nem ehhez a játékhoz tartoznak.");
+
+        int maxCards = size switch
+        {
+            Size.Egyszerű_találkozás => 1,
+            Size.Kis_kazamata => 4,
+            Size.Nagy_kazamata => 6,
+            _ => 1
+        };
+
+        if (cards.Count > maxCards)
+            return BadRequest($"A dungeon mérete maximum {maxCards} kártyát enged.");
+
+        var dungeon = new Dungeon
+        {
+            Name = request.Name,
+            Size = size,
+            GameId = request.GameId,
+            Cards = cards
+        };
+
+        _dbContext.Dungeons.Add(dungeon);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            dungeon.Id,
+            dungeon.Name,
+            dungeon.Size,
+            CardIds = dungeon.Cards.Select(c => c.Id)
+        });
+    }
+
+    [HttpGet("{dungeonId}/getcards")]
+    public async Task<IActionResult> GetDungeonCards(int dungeonId)
+    {
+        var dungeon = await _dbContext.Dungeons
+            .Include(d => d.Cards)
+            .FirstOrDefaultAsync(d => d.Id == dungeonId);
+
+        if (dungeon == null)
+            return NotFound("Nincs ilyen dungeon.");
+
+        var cardsDto = dungeon.Cards.Select(c => new
+        {
+            c.Id,
+            c.Name,
+            c.Damage,
+            c.HP,
+            c.CardType
+        });
+
+        return Ok(cardsDto);
     }
 
     [HttpDelete("deletecard/{id}")]
@@ -118,6 +189,31 @@ public class GameController : ControllerBase
         return Ok(cards);
     }
 
+    [HttpPost("addPlayerDeck")]
+    public async Task<IActionResult> AddPlayerDeck([FromBody] PlayerDeckCreateRequest request)
+    {
+        var game = await _dbContext.Games.FindAsync(request.GameId);
+        if (game == null) return BadRequest("A játék nem létezik.");
+
+        var cards = await _dbContext.Cards
+            .Where(c => request.CardIds.Contains(c.Id) && c.GameId == request.GameId)
+            .ToListAsync();
+
+        if (cards.Count != request.CardIds.Count)
+            return BadRequest("Egyes kártyák nem léteznek vagy nem ehhez a játékhoz tartoznak.");
+
+        var deck = new PlayerCards
+        {
+            GameId = request.GameId,
+            Cards = cards
+        };
+
+        _dbContext.PlayerCards.Add(deck);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { deck.Id, CardIds = deck.Cards.Select(c => c.Id) });
+    }
+
 }
 
 public class NameRequest
@@ -129,7 +225,22 @@ public class CardRequest
 {
     public string Name { get; set; }
     public int Damage { get; set; }
-    public int Health { get; set; }
+    public int HP { get; set; }
     public string CardType { get; set; }
     public int GameId { get; set; }
+    public bool IsBoss { get; set; }
+}
+
+public class DungeonCreateRequest
+{
+    public string Name { get; set; }
+    public string Size { get; set; }
+    public int GameId { get; set; }
+    public List<int> CardIds { get; set; }
+}
+
+public class PlayerDeckCreateRequest
+{
+    public int GameId { get; set; }
+    public List<int> CardIds { get; set; }
 }

@@ -23,6 +23,12 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DuszaDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DuszaDbConnection")));
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
