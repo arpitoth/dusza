@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-type Size = "Egyszerű_találkozás" | "Kis_kazamata" | "Nagy_kazamata";
-
 interface Card {
   id: number;
   name: string;

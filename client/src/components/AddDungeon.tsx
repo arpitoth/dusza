@@ -259,7 +259,6 @@ const AddDungeon = () => {
               <br />
               <span className="mb-8 mt-8 text-lg">Életerő: {c.hp}</span> <br />
               <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
-              <span className="mb-8 mt-8 text-lg">Típus: {c.cardType}</span> <br />
               <span className="mb-8 mt-8 text-lg">{c.isBoss? "Vezér" : ""}</span>
               <br />
             </li>

@@ -214,6 +214,71 @@ public class GameController : ControllerBase
         return Ok(new { deck.Id, CardIds = deck.Cards.Select(c => c.Id) });
     }
 
+    [HttpGet("{gameId}/getPlayerCards")]
+    public async Task<IActionResult> GetPlayerCards(int gameId)
+    {
+        var playerDeck = await _dbContext.PlayerCards
+            .Include(pc => pc.Cards)
+            .FirstOrDefaultAsync(pc => pc.GameId == gameId);
+
+        if (playerDeck == null)
+            return NotFound("Nincs játékospakli ehhez a játékhoz.");
+
+        var cardsDto = playerDeck.Cards.Select(c => new
+        {
+            c.Id,
+            c.Name,
+            c.Damage,
+            c.HP,
+            c.CardType,
+            c.IsBoss
+        });
+
+        return Ok(cardsDto);
+    }
+
+    [HttpPatch("{playerCardId}/upgrade/{cardId}")]
+    public async Task<IActionResult> UpgradePlayerCard(int playerCardId, int cardId, UpgradeCardDto upgrade)
+    {
+        var playerCards = _dbContext.PlayerCards
+            .Include(pc => pc.Cards)
+            .FirstOrDefault(pc => pc.Id == playerCardId);
+
+        if (playerCards == null) return NotFound("Nincs ilyen kártyacsomag, főnök.");
+
+        var card = playerCards.Cards.FirstOrDefault(c => c.Id == cardId);
+        if (card == null) return NotFound("Nincs ilyen kártya, főnök.");
+
+        card.HP = upgrade.Health;
+        card.Damage = upgrade.Damage;
+
+        await _dbContext.SaveChangesAsync();
+        return Ok(card);
+    }
+
+    [HttpGet("{gameId}/dungeons")]
+    public async Task<IActionResult> GetDungeons(int gameId)
+    {
+        var dungeons = await _dbContext.Dungeons
+            .Where(d => d.GameId == gameId)
+            .Include(d => d.Cards)
+            .ToListAsync();
+
+        if (!dungeons.Any())
+            return NotFound("Nincsenek dungeonok ehhez a játékhoz.");
+
+        var result = dungeons.Select(d => new
+        {
+            d.Id,
+            d.Name,
+            d.Size,
+            CardCount = d.Cards.Count,
+            d.GameId
+        });
+
+        return Ok(result);
+    }
+
 }
 
 public class NameRequest
@@ -243,4 +308,10 @@ public class PlayerDeckCreateRequest
 {
     public int GameId { get; set; }
     public List<int> CardIds { get; set; }
+}
+
+public class UpgradeCardDto
+{
+    public int Health { get; set; }
+    public int Damage { get; set; }
 }

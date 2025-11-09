@@ -67,7 +67,7 @@ const Game = () => {
     const card = {
       Name: formData.get("name"),
       Damage: Number(formData.get("damage")),
-      Health: Number(formData.get("health")),
+      HP: Number(formData.get("health")),
       CardType: selectedOption,
       IsBoss: false,
     };
